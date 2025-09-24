@@ -8,6 +8,7 @@ import Comunicados from './Comunicados.jsx';
 import Reservas from './Reservas.jsx';
 import Reportes from './Reportes.jsx';
 import Chatbot from './chatbot.jsx';
+import Perfil from './Perfil.jsx';
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -18,6 +19,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path='/' element={<App />} />
       <Route path='/registro' element={<Registro />} />
       <Route path='/comunicados' element={<Comunicados />} />
+      <Route path='/perfil' element={<Perfil />} />
       <Route path='/reservas' element={<Reservas />} />
       <Route path='/reportes' element={<Reportes />} />
       <Route path='/chatbot' element={<Chatbot />} />

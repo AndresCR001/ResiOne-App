@@ -36,6 +36,10 @@ export default function Comunicados() {
     ));
   };
 
+  const handlePerfil = () => {
+  navigate('/perfil');
+};
+
   const handleReservas = () => {
     navigate('/reservas');
   };
@@ -70,6 +74,7 @@ export default function Comunicados() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
           <h1 style={{ margin: 0, textAlign: "left", flex: 1 }}>Comunicados</h1>
           <div>
+            <button className="boton-login" style={{ marginRight: "10px" }} onClick={handlePerfil}>Perfil</button>
             <button className="boton-login" style={{ marginRight: "10px" }} onClick={handleReservas}>Reservas</button>
             <button className="boton-login" style={{ marginRight: "10px" }} onClick={handleReportes}>Reportes</button>
             <button className="boton-login" style={{ marginRight: "10px" }} onClick={handleChatbot}>Chatbot</button>
