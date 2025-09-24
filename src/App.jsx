@@ -1,35 +1,65 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Link } from 'react-router-dom';
+
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  //Credenciales para inicio de sesion
+  const [correo, setCorreo] = useState("");
+  const [contraseña, setContraseña] = useState("");
+
+  //Aca se da el manejo del evento inicio de seion
+  const InicioSesion = (iniciar) => {
+    iniciar.preventDefault();
+    console.log("Intentando iniciar sesion con: ", correo,contraseña);
+    // Aca debe estar la logica de autenticacion
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className='contenedor-login'>
+
+        <div className='caja-login'>
+          <h1>Inicio de Sesion </h1>
+          <form onSubmit={InicioSesion}>
+
+            <div className='grupo-input'>
+              <label htmlFor='correo'>Correo Electronico</label>
+              <input
+                type='email'
+                id='correo'
+                placeholder='usuario@ejemplo.com'
+                value={correo}
+                onChange={(e) => setCorreo(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className='grupo-input'>
+              <label htmlFor='contraseña'>Contraseña</label>
+              <input
+                type='password'
+                id='contraseña'
+                placeholder='***********'
+                value={contraseña}
+                onChange={(e) => setContraseña(e.target.value)}
+                required
+              />
+            </div>
+
+            <button type='submit' className='boton-login'>Ingresar</button>
+
+          </form>
+
+          <p className='texto-registro'>
+            No tienes cuenta? <Link to='/registro'>Crear una cuenta</Link>
+          </p>
+
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
+
 }
 
 export default App
