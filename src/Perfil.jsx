@@ -57,6 +57,25 @@ export default function Perfil() {
           gap: '1rem',
         }}
       >
+        <button
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            left: '1rem',
+            background: '#6c757d',
+            border: 'none',
+            borderRadius: '50%',
+            color: 'white',
+            width: '30px',
+            height: '30px',
+            cursor: 'pointer',
+            fontSize: '1rem'
+          }}
+          onClick={() => navigate(-1)}
+        >
+          ←
+        </button>
+
         <h1 style={{ margin: 0, textAlign: 'center' }}>Mi Perfil</h1>
 
         <label>
