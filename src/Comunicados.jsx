@@ -1,9 +1,11 @@
-import { useState, useNavigate } from 'react';
+import { useState } from 'react'
+import { Link, useNavigate} from 'react-router-dom';
 import './App.css';
+import ChatbotButton from "./ChatbotButton";
 
 export default function Comunicados() {
 
-//const navigate = useNavigate();
+const navigate = useNavigate();
     
 const [publicaciones, setPublicaciones] = useState([
 { id: 1, autor: "Admin", contenido: "Bienvenidos al feed de comunicados", editable: false },
@@ -34,18 +36,20 @@ setPublicaciones(publicaciones.map(pub =>
     pub.id === id ? { ...pub, contenido, editable: false } : pub
 ));
 };
-/*
-  const handleReservas = () => {
-    navigate('/reservas'); // pantalla de crear publicación
-  };
 
-  const handleReportes = () => {
-    navigate('/reportes'); // pantalla de filtros
-  };
 
-  const handleChatbot = () => {
-    navigate('/chatbot'); // pantalla de opciones
-  };*/
+const handleReservas = () => {
+navigate('/reservas'); // pantalla de crear publicación
+};
+
+const handleReportes = () => {
+navigate('/reportes'); // pantalla de filtros
+};
+
+const handleChatbot = () => {
+navigate('/chatbot'); // pantalla de opciones
+};
+
 
   return (
    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
@@ -56,14 +60,14 @@ setPublicaciones(publicaciones.map(pub =>
             height: "90vh",       // 90% del alto de la ventana
             padding: "2%",        // padding proporcional al tamaño del div
             boxShadow: "0px 4px 20px rgba(0,0,0,0.1)",
-            display: "flex",
+            display: "flex", 
             flexDirection: "column"
         }}>
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
           <h1 style={{ margin: 0, textAlign: "left", flex: 1 }}>Comunicados</h1>
           <div>
-            <button className="boton-login" style={{ marginRight: "10px" }}>Reservas</button>
+            <button className="boton-login" style={{ marginRight: "10px" }} onClick={handleReservas}>Reservas</button>
             <button className="boton-login" style={{ marginRight: "10px" }}>Reportes</button>
             <button className="boton-login">Chatbot</button>
           </div>
@@ -99,12 +103,13 @@ setPublicaciones(publicaciones.map(pub =>
 
             <div className="acciones" style={{ display: "flex", gap: "10px" }}>
               <button className="boton-login" onClick={() => toggleEditar(pub.id)}>Editar</button>
-              <button className="boton-login">Eliminar</button>
+              <button className="boton-login" >Eliminar</button>
               <button className="boton-login">Compartir</button>
             </div>
           </div>
         ))}
       </div>
+      <ChatbotButton />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
+import ChatbotButton from "./ChatbotButton";
 
 export default function Registro(){
     const [nombre,setNombre] = useState("");
@@ -110,6 +111,8 @@ export default function Registro(){
           </p>
 
         </div>
+        
+      <ChatbotButton />
       </div>
     </>
   );
