@@ -12,29 +12,32 @@ function App() {
 // Manejo del evento inicio de sesion
 const InicioSesion = async (e) => {
   e.preventDefault();
+  try {
+    console.log("Voy a mandar:", { correo, contraseña });
 
-  /*try {
-    const respuesta = await fetch("http://localhost:5000/api/login", {
+    const respuesta = await fetch("http://localhost:5050/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ correo, contraseña }),
     });
 
     const data = await respuesta.json();
-
+    console.log(data)
     if (respuesta.ok) {
       alert(data.mensaje + " 👋 Bienvenido " + data.usuario);
-      // Aquí podrías guardar info en localStorage y redirigir a otra página
-      // localStorage.setItem("usuario", data.usuario);
-      // navigate("/dashboard");
+      localStorage.setItem("usuario", data.usuario);
+      navigate("/comunicados");
+
     } else {
       alert("Error: " + data.mensaje);
     }
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
     alert("No se pudo conectar con el servidor");
-  }*/
- navigate("/comunicados");
+    
+  }
+
 };
 
 

@@ -16,10 +16,10 @@ export default function Registro(){
       alert('Las contraseñas no coinciden');
       return;
     }
-/*
+
     try {
       // Petición al backend
-      const respuesta = await fetch("http://localhost:5000/api/registro", {
+      const respuesta = await fetch("http://localhost:5050/api/registro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre, correo, contraseña }),
@@ -41,7 +41,7 @@ export default function Registro(){
       console.error("Error al registrar:", error.mensaje);
       console.error(error);
       alert("No se pudo conectar con el servidor");
-    } */
+    } 
   };
   
 
