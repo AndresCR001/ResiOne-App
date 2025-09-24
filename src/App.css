@@ -70,4 +70,28 @@ body {
 .texto-registro a {
   color: #4facfe;
   text-decoration: none;
+  .feed-contenedor {
+  width: 600px;
+  margin: auto;
+  padding: 20px;
+}
+
+.crear-publicacion textarea {
+  width: 100%;
+  height: 80px;
+  margin-bottom: 10px;
+}
+
+.publicacion {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+.acciones button {
+  margin-right: 10px;
+}
+
 }

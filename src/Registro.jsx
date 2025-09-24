@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 
 export default function Registro(){
     const [nombre,setNombre] = useState("");
@@ -7,15 +7,42 @@ export default function Registro(){
     const [contraseña,setContraseña] = useState("");
     const [confirmar,setConfirmar] = useState("");
 
-    const Registrar = (nuevoRegistro) => {
-        nuevoRegistro.preventDefault();
-        if (contraseña !== confirmar) {
-            alert('Contraseña incorrecta');
-            return;
-        }
-        //Aca se ingresa un usuario a la base de datos
-        console.log('Nuevo usuario: ', nombre, correo);
-    };
+    const Registrar = async (e) => {
+    e.preventDefault();
+
+    // Validación simple
+    if (contraseña !== confirmar) {
+      alert('Las contraseñas no coinciden');
+      return;
+    }
+/*
+    try {
+      // Petición al backend
+      const respuesta = await fetch("http://localhost:5000/api/registro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, correo, contraseña }),
+      });
+
+      const data = await respuesta.json();
+
+      if (respuesta.ok) {
+        alert(data.mensaje); // "Usuario registrado"
+        // Limpiar inputs después de registro exitoso
+        setNombre("");
+        setCorreo("");
+        setContraseña("");
+        setConfirmar("");
+      } else {
+        alert("Error: " + data.mensaje);
+      }
+    } catch (error) {
+      console.error("Error al registrar:", error.mensaje);
+      console.error(error);
+      alert("No se pudo conectar con el servidor");
+    } */
+  };
+  
 
     return(
     

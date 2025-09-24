@@ -1,19 +1,42 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
 
 import './App.css'
 
 function App() {
+  const navigate = useNavigate();
   //Credenciales para inicio de sesion
   const [correo, setCorreo] = useState("");
   const [contraseña, setContraseña] = useState("");
 
-  //Aca se da el manejo del evento inicio de seion
-  const InicioSesion = (iniciar) => {
-    iniciar.preventDefault();
-    console.log("Intentando iniciar sesion con: ", correo,contraseña);
-    // Aca debe estar la logica de autenticacion
-  };
+// Manejo del evento inicio de sesion
+const InicioSesion = async (e) => {
+  e.preventDefault();
+
+  /*try {
+    const respuesta = await fetch("http://localhost:5000/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correo, contraseña }),
+    });
+
+    const data = await respuesta.json();
+
+    if (respuesta.ok) {
+      alert(data.mensaje + " 👋 Bienvenido " + data.usuario);
+      // Aquí podrías guardar info en localStorage y redirigir a otra página
+      // localStorage.setItem("usuario", data.usuario);
+      // navigate("/dashboard");
+    } else {
+      alert("Error: " + data.mensaje);
+    }
+  } catch (error) {
+    console.error("Error al iniciar sesión:", error);
+    alert("No se pudo conectar con el servidor");
+  }*/
+ navigate("/comunicados");
+};
+
 
   return (
     <>
