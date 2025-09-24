@@ -7,34 +7,56 @@ export default function Perfil() {
   const [usuario, setUsuario] = useState({
     nombre: '',
     correo: '',
-    celular: '',
-    residencia: '',
+    identificacion: '',
+    telefono: '',
+    apartamento: '',
+    habitantes: '',
+    esAdministrador: false,
+    codigoEmpleado: ''
   });
 
   const [editando, setEditando] = useState(false);
 
   useEffect(() => {
-    const usuarioGuardado = localStorage.getItem('usuarioInfo');
-    if (usuarioGuardado) {
-      setUsuario(JSON.parse(usuarioGuardado));
+    const datosGuardados = localStorage.getItem('usuarioInfo');
+    if (datosGuardados) {
+      setUsuario(JSON.parse(datosGuardados));
     } else {
-      navigate('/'); // Redirige si no hay usuario (por ejemplo, a login)
+      navigate('/'); // Redirige al login si no hay sesión
     }
   }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUsuario((prev) => ({ ...prev, [name]: value }));
+    setUsuario(prev => ({ ...prev, [name]: value }));
   };
 
   const handleEditar = () => {
     setEditando(true);
   };
 
-  const handleGuardar = () => {
-    localStorage.setItem('usuarioInfo', JSON.stringify(usuario));
-    setEditando(false);
-    alert('Perfil actualizado');
+  const handleGuardar = async () => {
+    try {
+      const respuesta = await fetch('http://localhost:5050/api/editar', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(usuario)
+      });
+
+      const data = await respuesta.json();
+
+      if (respuesta.ok) {
+        alert(data.mensaje);
+        setUsuario(data.usuario);
+        localStorage.setItem('usuarioInfo', JSON.stringify(data.usuario));
+        setEditando(false);
+      } else {
+        alert('Error al guardar: ' + data.mensaje);
+      }
+    } catch (error) {
+      console.error('Error al actualizar el perfil:', error);
+      alert('Error de conexión con el servidor');
+    }
   };
 
   const handleLogout = () => {
@@ -43,78 +65,125 @@ export default function Perfil() {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-      <div
-        style={{
-          background: 'white',
-          borderRadius: '10px',
-          width: '90vw',
-          maxWidth: '450px',
-          padding: '2rem',
-          boxShadow: '0px 4px 20px rgba(0,0,0,0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
-        }}
-      >
-        <h1 style={{ margin: 0, textAlign: 'center' }}>Mi Perfil</h1>
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '100vh'
+    }}>
+      <div style={{
+        background: 'white',
+        borderRadius: '10px',
+        width: '90vw',
+        maxWidth: '500px',
+        padding: '2rem',
+        boxShadow: '0px 4px 20px rgba(0,0,0,0.1)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem'
+      }}>
+        <h1 style={{ textAlign: 'center' }}>Mi Perfil</h1>
 
+        {/* Nombre */}
         <label>
-          Nombre
+          Nombre completo
           <input
             className="boton-login"
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
             type="text"
             name="nombre"
             value={usuario.nombre}
-            onChange={handleChange}
-            readOnly={!editando}
-            placeholder="Nombre completo"
+            readOnly
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', backgroundColor: '#f0f0f0', border: '1px solid #ccc' }}
           />
         </label>
 
+        {/* Correo */}
         <label>
           Correo electrónico
           <input
             className="boton-login"
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
             type="email"
             name="correo"
             value={usuario.correo}
-            onChange={handleChange}
-            readOnly={!editando}
-            placeholder="correo@ejemplo.com"
+            readOnly
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', backgroundColor: '#f0f0f0', border: '1px solid #ccc' }}
           />
         </label>
 
+        {/* Identificación */}
         <label>
-          Celular
+          Identificación
           <input
             className="boton-login"
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
-            type="tel"
-            name="celular"
-            value={usuario.celular}
-            onChange={handleChange}
-            readOnly={!editando}
-            placeholder="Ej. 123-456-7890"
-          />
-        </label>
-
-        <label>
-          Residencia
-          <input
-            className="boton-login"
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
             type="text"
-            name="residencia"
-            value={usuario.residencia}
-            onChange={handleChange}
-            readOnly={!editando}
-            placeholder="Ej. Edificio A, Apartamento 203"
+            name="identificacion"
+            value={usuario.identificacion}
+            readOnly
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', backgroundColor: '#f0f0f0', border: '1px solid #ccc' }}
           />
         </label>
 
+        {/* Teléfono */}
+        <label>
+          Teléfono
+          <input
+            className="boton-login"
+            type="tel"
+            name="telefono"
+            value={usuario.telefono}
+            onChange={handleChange}
+            readOnly={!editando}
+            placeholder="Ej. 88888888"
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
+          />
+        </label>
+
+        {/* Apartamento */}
+        <label>
+          Apartamento / Unidad Habitacional
+          <input
+            className="boton-login"
+            type="text"
+            name="apartamento"
+            value={usuario.apartamento}
+            onChange={handleChange}
+            readOnly={!editando}
+            placeholder="Ej. Torre B - Apto 203"
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
+          />
+        </label>
+
+        {/* Habitantes */}
+        <label>
+          Cantidad de personas en la unidad
+          <input
+            className="boton-login"
+            type="number"
+            name="habitantes"
+            value={usuario.habitantes}
+            onChange={handleChange}
+            readOnly={!editando}
+            placeholder="Ej. 3"
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
+          />
+        </label>
+
+        {/* Código de empleado solo si es administrador */}
+        {usuario.esAdministrador && (
+          <label>
+            Código de empleado
+            <input
+              className="boton-login"
+              type="text"
+              name="codigoEmpleado"
+              value={usuario.codigoEmpleado}
+              readOnly
+              style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', backgroundColor: '#f0f0f0', border: '1px solid #ccc' }}
+            />
+          </label>
+        )}
+
+        {/* Botones de acción */}
         {editando ? (
           <button className="boton-login" onClick={handleGuardar}>
             Guardar

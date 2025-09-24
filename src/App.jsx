@@ -25,7 +25,7 @@ const InicioSesion = async (e) => {
     const data = await respuesta.json();
     console.log(data)
     if (respuesta.ok) {
-      alert(data.mensaje + " 👋 Bienvenido " + data.usuario);
+      alert(data.mensaje + " 👋 Bienvenido " + data.usuario.nombre);
       localStorage.setItem("usuarioInfo", JSON.stringify(data.usuario));
       navigate("/comunicados");
 
