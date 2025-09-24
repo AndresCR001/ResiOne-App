@@ -184,6 +184,24 @@ export default function Reservas() {
           Crear Reserva
         </button>
 
+        {/* Botón Regresar */}
+        <button
+          onClick={() => navigate("/comunicados")}
+          style={{
+            width: "100%",
+            padding: "12px",
+            background: "#6c757d",
+            border: "none",
+            borderRadius: "8px",
+            color: "white",
+            fontSize: "1rem",
+            cursor: "pointer",
+            marginTop: "20px",
+          }}
+        >
+          Regresar
+        </button>
+
         {/* Listado de reservas */}
         <h2 style={{ marginTop: "30px", color: "#333" }}>Mis Reservas</h2>
         {reservas.length === 0 ? (

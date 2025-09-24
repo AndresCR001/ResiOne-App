@@ -1,4 +1,3 @@
-// Chatbot.jsx
 import { useState } from "react";
 import { Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -64,7 +63,22 @@ export default function Chatbot() {
           fontWeight: "bold",
           fontSize: "18px"
         }}>
-          Chatbot
+          <button
+            onClick={() => navigate("/comunicados")}
+            style={{
+              background: "#6c757d",
+              border: "none",
+              borderRadius: "5px",
+              color: "white",
+              fontSize: "1rem",
+              cursor: "pointer",
+              padding: "5px 10px",
+              marginRight: "10px",
+            }}
+          >
+            ←
+          </button>
+          <h3 style={{ margin: "0", color: "#007bff" }}>Chatbot</h3>
           <Info
             size={20}
             style={{ cursor: "pointer", color: "#007bff" }}
