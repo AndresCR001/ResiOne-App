@@ -28,7 +28,7 @@ export default function Reservas() {
 
   const fetchReservas = async () => {
     try {
-      const res = await fetch(`${ API_BASE_URL }`);
+      const res = await fetch(`${ API_BASE_URL}/reservas`);
       const data = await res.json();
       setReservas(data);
     } catch (error) { console.error("Error al obtener reservas:", error); }
@@ -50,7 +50,7 @@ export default function Reservas() {
     const nuevaReserva = { zona, fecha, horaInicio, horaFin, numeroPersonas: cantidad, comentarios: comentario || "Sin comentarios", estado: "pendiente" };
 
     try {
-      const res = await fetch(`${ API_BASE_URL }`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(nuevaReserva) });
+      const res = await fetch(`${ API_BASE_URL}/reservas`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(nuevaReserva) });
       if (!res.ok) { const err = await res.json(); alert(err.mensaje || "Error al crear reserva"); return; }
       const data = await res.json();
       alert(data.mensaje);
@@ -70,7 +70,7 @@ export default function Reservas() {
   const cancelarReserva = async (id) => {
     if (codigoVerificacion !== codigoGenerado) { alert("El código ingresado no es correcto"); return; }
     try {
-      const res = await fetch(`${API_BASE_URL}/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_BASE_URL}/reservas/${id}`, { method: "DELETE" });
       if (!res.ok) { const err = await res.json(); alert(err.mensaje || "Error al cancelar reserva"); return; }
       const data = await res.json();
       alert(data.mensaje);

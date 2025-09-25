@@ -14,7 +14,7 @@ export default function Comunicados() {
   // Cargar publicaciones
   const cargarPublicaciones = async () => {
     try {
-      const res = await fetch(`${ API_BASE_URL }/feed`);
+      const res = await fetch(`${API_BASE_URL}/comunicados/feed`);
       if (!res.ok) throw new Error("Error al obtener comunicados");
       const data = await res.json();
       setPublicaciones(data.comunicados || data); // Ajusta según tu backend
@@ -32,7 +32,7 @@ export default function Comunicados() {
     if (!nuevoTitulo.trim() || !nuevoContenido.trim()) return;
 
     try {
-      const res = await fetch(`${ API_BASE_URL } /crear`, {
+      const res = await fetch(`${API_BASE_URL}/comunicados/crear`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -57,7 +57,7 @@ export default function Comunicados() {
   // Editar publicación
   const actualizarPublicacion = async (id, titulo, contenido) => {
     try {
-      const res = await fetch(`${ API_BASE_URL }/editar/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/comunicados/editar/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ titulo, contenido })
@@ -71,7 +71,7 @@ export default function Comunicados() {
   // Eliminar publicación
   const eliminarPublicacion = async (id) => {
     try {
-      const res = await fetch(`${ API_BASE_URL }/eliminar/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/comunicados/eliminar/${id}`, { method: 'DELETE' });
       if (res.ok) cargarPublicaciones();
     } catch (error) {
       console.error('Error al eliminar:', error);
