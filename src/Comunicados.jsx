@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import ChatbotButton from "./ChatbotButton";
@@ -6,22 +6,46 @@ import ChatbotButton from "./ChatbotButton";
 export default function Comunicados() {
   const navigate = useNavigate();
 
-  const [publicaciones, setPublicaciones] = useState([
-    { id: 1, autor: "Admin", contenido: "Bienvenidos al feed de comunicados", editable: false },
-  ]);
+  const [publicaciones, setPublicaciones] = useState([]);
   const [nuevoContenido, setNuevoContenido] = useState("");
+  const [nuevoTitulo, setNuevoTitulo] = useState(""); // Campo para título
 
-  const crearPublicacion = () => {
-    if (!nuevoContenido.trim()) return;
+  const cargarPublicaciones = async () => {
+    try {
+      const res = await fetch('/api/comunicados/feed');
+      const data = await res.json();
+      setPublicaciones(data.comunicados);
+    } catch (error) {
+      console.error('Error al cargar comunicados:', error);
+    }
+  };
 
-    const nueva = {
-      id: Date.now(),
-      autor: "Usuario",
-      contenido: nuevoContenido,
-      editable: false,
-    };
-    setPublicaciones([nueva, ...publicaciones]);
-    setNuevoContenido("");
+  useEffect(() => {
+    cargarPublicaciones();
+  }, []);
+
+  const crearPublicacion = async () => {
+    if (!nuevoTitulo.trim() || !nuevoContenido.trim()) return;
+
+    try {
+      const res = await fetch('/api/comunicados/crear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          titulo: nuevoTitulo,
+          contenido: nuevoContenido,
+          autorId: "ID_DEL_USUARIO_LOGUEADO", // Obtén de localStorage o sesión
+          creadoPorAdministrador: true // Ajusta según rol
+        })
+      });
+      if (res.ok) {
+        setNuevoTitulo("");
+        setNuevoContenido("");
+        cargarPublicaciones();
+      }
+    } catch (error) {
+      console.error('Error al crear comunicado:', error);
+    }
   };
 
   const toggleEditar = (id) => {
@@ -30,15 +54,37 @@ export default function Comunicados() {
     ));
   };
 
-  const actualizarPublicacion = (id, contenido) => {
-    setPublicaciones(publicaciones.map(pub =>
-      pub.id === id ? { ...pub, contenido, editable: false } : pub
-    ));
+  const actualizarPublicacion = async (id, titulo, contenido) => {
+    try {
+      const res = await fetch(`/api/comunicados/editar/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titulo, contenido })
+      });
+      if (res.ok) {
+        cargarPublicaciones();
+      }
+    } catch (error) {
+      console.error('Error al actualizar:', error);
+    }
+  };
+
+  const eliminarPublicacion = async (id) => {
+    try {
+      const res = await fetch(`/api/comunicados/eliminar/${id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        cargarPublicaciones();
+      }
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+    }
   };
 
   const handlePerfil = () => {
-  navigate('/perfil');
-};
+    navigate('/perfil');
+  };
 
   const handleReservas = () => {
     navigate('/reservas');
@@ -70,20 +116,25 @@ export default function Comunicados() {
         display: "flex",
         flexDirection: "column"
       }}>
-        {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
           <h1 style={{ margin: 0, textAlign: "left", flex: 1 }}>Comunicados</h1>
-          <div>
-            <button className="boton-login" style={{ marginRight: "10px" }} onClick={handlePerfil}>Perfil</button>
-            <button className="boton-login" style={{ marginRight: "10px" }} onClick={handleReservas}>Reservas</button>
-            <button className="boton-login" style={{ marginRight: "10px" }} onClick={handleReportes}>Reportes</button>
-            <button className="boton-login" style={{ marginRight: "10px" }} onClick={handleChatbot}>Chatbot</button>
-            <button className="boton-login" onClick={handleLogout}>Log Out</button>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button className="boton-login" onClick={handlePerfil}>Perfil</button>
+            <button className="boton-login" onClick={handleReservas}>Reservas</button>
+            <button className="boton-login" onClick={handleReportes}>Reportes</button>
+            <button className="boton-login" onClick={handleChatbot}>Chatbot</button>
+            <button className="boton-login" onClick={handleLogout}>Logout</button>
           </div>
         </div>
 
         {/* Crear nueva publicación */}
         <div className="crear-publicacion" style={{ marginBottom: "20px" }}>
+          <input
+            placeholder="Título del comunicado"
+            value={nuevoTitulo}
+            onChange={(e) => setNuevoTitulo(e.target.value)}
+            style={{ width: "100%", borderRadius: "5px", padding: "10px", marginBottom: "10px" }}
+          />
           <textarea
             placeholder="¿Qué quieres comunicar?"
             value={nuevoContenido}
@@ -95,24 +146,24 @@ export default function Comunicados() {
 
         {/* Feed de publicaciones */}
         {publicaciones.map(pub => (
-          <div key={pub.id} className="publicacion" style={{ marginBottom: "15px" }}>
-            <div style={{ fontWeight: "bold", marginBottom: "5px" }}>{pub.autor}</div>
+          <div key={pub._id} className="publicacion" style={{ marginBottom: "15px" }}>
+            <div style={{ fontWeight: "bold", marginBottom: "5px" }}>{pub.titulo} - {pub.autorId.nombre || pub.autor}</div>
             {pub.editable ? (
               <>
                 <textarea
                   value={pub.contenido}
-                  onChange={(e) => actualizarPublicacion(pub.id, e.target.value)}
+                  onChange={(e) => actualizarPublicacion(pub._id, pub.titulo, e.target.value)}
                   style={{ width: "100%", borderRadius: "5px", padding: "5px", marginBottom: "5px" }}
                 />
-                <button className="boton-login" onClick={() => actualizarPublicacion(pub.id, pub.contenido)}>Guardar</button>
+                <button className="boton-login" onClick={() => actualizarPublicacion(pub._id, pub.titulo, pub.contenido)}>Guardar</button>
               </>
             ) : (
               <p style={{ marginBottom: "10px" }}>{pub.contenido}</p>
             )}
 
             <div className="acciones" style={{ display: "flex", gap: "10px" }}>
-              <button className="boton-login" onClick={() => toggleEditar(pub.id)}>Editar</button>
-              <button className="boton-login">Eliminar</button>
+              <button className="boton-login" onClick={() => toggleEditar(pub._id)}>Editar</button>
+              <button className="boton-login" onClick={() => eliminarPublicacion(pub._id)}>Eliminar</button>
               <button className="boton-login">Compartir</button>
             </div>
           </div>

@@ -20,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rutas
 app.use('/api', usuarioRoutes);
+app.use('/api', comunicadosRoutes);
 
 // Servidor
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
