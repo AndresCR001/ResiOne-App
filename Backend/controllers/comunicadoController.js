@@ -1,42 +1,47 @@
+// comunicadoController.js
 const Comunicado = require('../models/Comunicado');
-
-exports.crearComunicado = async (req, res) => {
-  try {
-    const comunicado = new Comunicado(req.body);
-    const savedComunicado = await comunicado.save();
-    res.status(201).json(savedComunicado);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
 
 exports.obtenerComunicados = async (req, res) => {
   try {
-    const comunicados = await Comunicado.find({ estado: 'activo' })
-      .populate('autorId', 'nombre correo')
-      .sort({ fechaPublicacion: -1 });
-    res.json(comunicados);
+    const comunicados = await Comunicado.find();
+    res.json({ comunicados });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al obtener comunicados' });
   }
 };
 
-exports.actualizarComunicado = async (req, res) => {
+exports.crearComunicado = async (req, res) => {
   try {
-    const comunicado = await Comunicado.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!comunicado) return res.status(404).json({ message: 'Comunicado no encontrado' });
-    res.json(comunicado);
+    const { titulo, contenido, autorId, creadoPorAdministrador } = req.body;
+    const nuevo = new Comunicado({ titulo, contenido, autorId, creadoPorAdministrador });
+    await nuevo.save();
+    res.status(201).json(nuevo);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al crear comunicado' });
+  }
+};
+
+exports.editarComunicado = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { titulo, contenido } = req.body;
+    const actualizado = await Comunicado.findByIdAndUpdate(id, { titulo, contenido, ultimaActualizacion: Date.now() }, { new: true });
+    res.json(actualizado);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al editar comunicado' });
   }
 };
 
 exports.eliminarComunicado = async (req, res) => {
   try {
-    const comunicado = await Comunicado.findByIdAndDelete(req.params.id);
-    if (!comunicado) return res.status(404).json({ message: 'Comunicado no encontrado' });
-    res.json({ message: 'Comunicado eliminado' });
+    const { id } = req.params;
+    await Comunicado.findByIdAndDelete(id);
+    res.json({ mensaje: 'Comunicado eliminado' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al eliminar comunicado' });
   }
 };

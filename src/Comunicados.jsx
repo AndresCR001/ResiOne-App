@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import ChatbotButton from "./ChatbotButton";
+
+const API_URL = "http://localhost:5050/api/comunicados";
 
 export default function Comunicados() {
   const navigate = useNavigate();
@@ -10,11 +12,13 @@ export default function Comunicados() {
   const [nuevoContenido, setNuevoContenido] = useState("");
   const [nuevoTitulo, setNuevoTitulo] = useState(""); // Campo para título
 
+  // Cargar publicaciones
   const cargarPublicaciones = async () => {
     try {
-      const res = await fetch('/api/comunicados/feed');
+      const res = await fetch(`${API_URL}/feed`);
+      if (!res.ok) throw new Error("Error al obtener comunicados");
       const data = await res.json();
-      setPublicaciones(data.comunicados);
+      setPublicaciones(data.comunicados || data); // Ajusta según tu backend
     } catch (error) {
       console.error('Error al cargar comunicados:', error);
     }
@@ -24,85 +28,70 @@ export default function Comunicados() {
     cargarPublicaciones();
   }, []);
 
+  // Crear nueva publicación
   const crearPublicacion = async () => {
     if (!nuevoTitulo.trim() || !nuevoContenido.trim()) return;
 
     try {
-      const res = await fetch('/api/comunicados/crear', {
+      const res = await fetch(`${API_URL}/crear`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           titulo: nuevoTitulo,
           contenido: nuevoContenido,
-          autorId: "ID_DEL_USUARIO_LOGUEADO", // Obtén de localStorage o sesión
-          creadoPorAdministrador: true // Ajusta según rol
+          autorId: "ID_DEL_USUARIO_LOGUEADO",
+          creadoPorAdministrador: true
         })
       });
       if (res.ok) {
         setNuevoTitulo("");
         setNuevoContenido("");
         cargarPublicaciones();
+      } else {
+        console.error("Error al crear comunicado", res.status);
       }
     } catch (error) {
       console.error('Error al crear comunicado:', error);
     }
   };
 
-  const toggleEditar = (id) => {
-    setPublicaciones(publicaciones.map(pub =>
-      pub.id === id ? { ...pub, editable: !pub.editable } : pub
-    ));
-  };
-
+  // Editar publicación
   const actualizarPublicacion = async (id, titulo, contenido) => {
     try {
-      const res = await fetch(`/api/comunicados/editar/${id}`, {
+      const res = await fetch(`${API_URL}/editar/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ titulo, contenido })
       });
-      if (res.ok) {
-        cargarPublicaciones();
-      }
+      if (res.ok) cargarPublicaciones();
     } catch (error) {
       console.error('Error al actualizar:', error);
     }
   };
 
+  // Eliminar publicación
   const eliminarPublicacion = async (id) => {
     try {
-      const res = await fetch(`/api/comunicados/eliminar/${id}`, {
-        method: 'DELETE'
-      });
-      if (res.ok) {
-        cargarPublicaciones();
-      }
+      const res = await fetch(`${API_URL}/eliminar/${id}`, { method: 'DELETE' });
+      if (res.ok) cargarPublicaciones();
     } catch (error) {
       console.error('Error al eliminar:', error);
     }
   };
 
-  const handlePerfil = () => {
-    navigate('/perfil');
+  // Toggle edición
+  const toggleEditar = (id) => {
+    setPublicaciones(publicaciones.map(pub =>
+      pub._id === id ? { ...pub, editable: !pub.editable } : pub
+    ));
   };
 
-  const handleReservas = () => {
-    navigate('/reservas');
-  };
-
-  const handleReportes = () => {
-    navigate('/reportes');
-  };
-
-  const handleChatbot = () => {
-    navigate('/chatbot');
-  };
-
-  const handleLogout = () => {
-    // Aquí podrías limpiar un token en localStorage si lo usas
-    // localStorage.removeItem("token");
-    navigate('/'); // vuelve al login
-  };
+  // Navegación
+  const handlePerfil = () => navigate('/perfil');
+  const handleReservas = () => navigate('/reservas');
+  const handleReportes = () => navigate('/reportes');
+  const handleChatbot = () => navigate('/chatbot');
+  const handleLogout = () => navigate('/');
 
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
@@ -116,6 +105,7 @@ export default function Comunicados() {
         display: "flex",
         flexDirection: "column"
       }}>
+        {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
           <h1 style={{ margin: 0, textAlign: "left", flex: 1 }}>Comunicados</h1>
           <div style={{ display: "flex", gap: "10px" }}>
@@ -147,7 +137,7 @@ export default function Comunicados() {
         {/* Feed de publicaciones */}
         {publicaciones.map(pub => (
           <div key={pub._id} className="publicacion" style={{ marginBottom: "15px" }}>
-            <div style={{ fontWeight: "bold", marginBottom: "5px" }}>{pub.titulo} - {pub.autorId.nombre || pub.autor}</div>
+            <div style={{ fontWeight: "bold", marginBottom: "5px" }}>{pub.titulo} - {pub.autorId?.nombre || pub.autor}</div>
             {pub.editable ? (
               <>
                 <textarea
@@ -160,7 +150,6 @@ export default function Comunicados() {
             ) : (
               <p style={{ marginBottom: "10px" }}>{pub.contenido}</p>
             )}
-
             <div className="acciones" style={{ display: "flex", gap: "10px" }}>
               <button className="boton-login" onClick={() => toggleEditar(pub._id)}>Editar</button>
               <button className="boton-login" onClick={() => eliminarPublicacion(pub._id)}>Eliminar</button>
@@ -171,5 +160,5 @@ export default function Comunicados() {
       </div>
       <ChatbotButton />
     </div>
-  )
+  );
 }
