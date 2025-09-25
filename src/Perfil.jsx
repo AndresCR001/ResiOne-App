@@ -65,26 +65,7 @@ export default function Perfil() {
   };
 
   return (
-<<<<<<< HEAD
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh'
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: '10px',
-        width: '90vw',
-        maxWidth: '500px',
-        padding: '2rem',
-        boxShadow: '0px 4px 20px rgba(0,0,0,0.1)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1rem'
-      }}>
-        <h1 style={{ textAlign: 'center' }}>Mi Perfil</h1>
-=======
+
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
       <div
         style={{
@@ -119,7 +100,6 @@ export default function Perfil() {
         </button>
 
         <h1 style={{ margin: 0, textAlign: 'center' }}>Mi Perfil</h1>
->>>>>>> dbd5bf5282c01ec861fd88c97cc227926c4793e0
 
         {/* Nombre */}
         <label>

@@ -7,7 +7,12 @@ export default function Reservas() {
   const [fecha, setFecha] = useState("");
   const [horaInicio, setHoraInicio] = useState("");
   const [horaFin, setHoraFin] = useState("");
+  const [cantidad, setCantidad] = useState(0);
+  const [comentario, setComentario] = useState("");
   const [reservas, setReservas] = useState([]);
+  const [telefono, setTelefono] = useState("");
+  const [codigoVerificacion, setCodigoVerificacion] = useState("");
+  const [codigoGenerado, setCodigoGenerado] = useState("");
   const navigate = useNavigate();
 
   const zonasComunes = [
@@ -18,9 +23,24 @@ export default function Reservas() {
     "Parque Infantil",
   ];
 
+  // Validar que no sea fecha pasada
+  const validarFecha = (fecha) => {
+    const hoy = new Date().toISOString().split("T")[0];
+    return fecha >= hoy;
+  };
+
+  // Crear reserva
   const crearReserva = () => {
     if (!zona || !fecha || !horaInicio || !horaFin) {
       alert("Por favor completa todos los campos");
+      return;
+    }
+    if (!validarFecha(fecha)) {
+      alert("La fecha seleccionada no puede ser anterior al día actual");
+      return;
+    }
+    if (cantidad <= 0) {
+      alert("La cantidad de personas debe ser mayor a 0");
       return;
     }
 
@@ -30,6 +50,9 @@ export default function Reservas() {
       fecha,
       horaInicio,
       horaFin,
+      cantidad,
+      comentario,
+      estado: "pendiente", // por defecto
     };
 
     setReservas([...reservas, nueva]);
@@ -37,6 +60,39 @@ export default function Reservas() {
     setFecha("");
     setHoraInicio("");
     setHoraFin("");
+    setCantidad(0);
+    setComentario("");
+  };
+
+  // Simular envío de código de verificación
+  const enviarCodigo = () => {
+    if (!telefono.match(/^\d{8}$/)) {
+      alert("Ingrese un número válido de 8 dígitos");
+      return;
+    }
+    const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let code =
+      letras[Math.floor(Math.random() * letras.length)] +
+      letras[Math.floor(Math.random() * letras.length)] +
+      letras[Math.floor(Math.random() * letras.length)] +
+      letras[Math.floor(Math.random() * letras.length)] +
+      Math.floor(Math.random() * 10) +
+      Math.floor(Math.random() * 10);
+    setCodigoGenerado(code);
+    alert("Código enviado por SMS (simulado): " + code);
+  };
+
+  // Cancelar reserva
+  const cancelarReserva = (id) => {
+    if (codigoVerificacion !== codigoGenerado) {
+      alert("El código ingresado no es correcto");
+      return;
+    }
+    setReservas(reservas.filter((r) => r.id !== id));
+    alert("Reserva cancelada correctamente ✅");
+    setTelefono("");
+    setCodigoVerificacion("");
+    setCodigoGenerado("");
   };
 
   return (
@@ -60,29 +116,6 @@ export default function Reservas() {
           position: "relative",
         }}
       >
-        {/* Icono de Reportes */}
-        <div
-          style={{
-            position: "absolute",
-            top: "20px",
-            right: "20px",
-            cursor: "pointer",
-            fontSize: "1.2rem",
-            background: "#4facfe",
-            color: "white",
-            borderRadius: "50%",
-            width: "28px",
-            height: "28px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          title="Reporte de incidencias"
-          onClick={() => navigate("/reportes")}
-        >
-          i
-        </div>
-
         {/* Encabezado */}
         <h1 style={{ color: "#333", marginBottom: "20px", textAlign: "center" }}>
           Reservas de Zonas Comunes
@@ -97,17 +130,13 @@ export default function Reservas() {
             marginBottom: "20px",
           }}
         >
+          {/* Zona */}
           <div>
-            <label style={{ fontSize: "0.9rem", color: "#555" }}>Zona</label>
+            <label>Zona</label>
             <select
               value={zona}
               onChange={(e) => setZona(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-              }}
+              style={{ width: "100%", padding: "10px" }}
             >
               <option value="">Seleccionar...</option>
               {zonasComunes.map((z, i) => (
@@ -118,52 +147,58 @@ export default function Reservas() {
             </select>
           </div>
 
+          {/* Fecha */}
           <div>
-            <label style={{ fontSize: "0.9rem", color: "#555" }}>Fecha</label>
+            <label>Fecha</label>
             <input
               type="date"
               value={fecha}
               onChange={(e) => setFecha(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-              }}
+              style={{ width: "100%", padding: "10px" }}
             />
           </div>
 
+          {/* Hora inicio */}
           <div>
-            <label style={{ fontSize: "0.9rem", color: "#555" }}>
-              Hora inicio
-            </label>
+            <label>Hora inicio</label>
             <input
               type="time"
               value={horaInicio}
               onChange={(e) => setHoraInicio(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-              }}
+              style={{ width: "100%", padding: "10px" }}
             />
           </div>
 
+          {/* Hora fin */}
           <div>
-            <label style={{ fontSize: "0.9rem", color: "#555" }}>
-              Hora fin
-            </label>
+            <label>Hora fin</label>
             <input
               type="time"
               value={horaFin}
               onChange={(e) => setHoraFin(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-              }}
+              style={{ width: "100%", padding: "10px" }}
+            />
+          </div>
+
+          {/* Cantidad */}
+          <div>
+            <label>Cantidad de personas</label>
+            <input
+              type="number"
+              value={cantidad}
+              onChange={(e) => setCantidad(Number(e.target.value))}
+              style={{ width: "100%", padding: "10px" }}
+            />
+          </div>
+
+          {/* Comentarios */}
+          <div>
+            <label>Comentarios</label>
+            <input
+              type="text"
+              value={comentario}
+              onChange={(e) => setComentario(e.target.value)}
+              style={{ width: "100%", padding: "10px" }}
             />
           </div>
         </div>
@@ -184,24 +219,6 @@ export default function Reservas() {
           Crear Reserva
         </button>
 
-        {/* Botón Regresar */}
-        <button
-          onClick={() => navigate("/comunicados")}
-          style={{
-            width: "100%",
-            padding: "12px",
-            background: "#6c757d",
-            border: "none",
-            borderRadius: "8px",
-            color: "white",
-            fontSize: "1rem",
-            cursor: "pointer",
-            marginTop: "20px",
-          }}
-        >
-          Regresar
-        </button>
-
         {/* Listado de reservas */}
         <h2 style={{ marginTop: "30px", color: "#333" }}>Mis Reservas</h2>
         {reservas.length === 0 ? (
@@ -219,13 +236,34 @@ export default function Reservas() {
               }}
             >
               <strong>{r.zona}</strong> <br />
-              📅 {r.fecha} | ⏰ {r.horaInicio} - {r.horaFin}
+              📅 {r.fecha} | ⏰ {r.horaInicio} - {r.horaFin} <br />
+              👥 {r.cantidad} personas <br />
+              📝 {r.comentario || "Sin comentarios"} <br />
+              📌 Estado: {r.estado}
+              <div style={{ marginTop: "10px" }}>
+                <input
+                  type="text"
+                  placeholder="Teléfono (8 dígitos)"
+                  value={telefono}
+                  onChange={(e) => setTelefono(e.target.value)}
+                  style={{ marginRight: "5px" }}
+                />
+                <button onClick={enviarCodigo}>Enviar código</button>
+                <input
+                  type="text"
+                  placeholder="Código recibido"
+                  value={codigoVerificacion}
+                  onChange={(e) => setCodigoVerificacion(e.target.value)}
+                  style={{ marginLeft: "5px", marginRight: "5px" }}
+                />
+                <button onClick={() => cancelarReserva(r.id)}>Cancelar</button>
+              </div>
             </div>
           ))
         )}
       </div>
-      
-    <ChatbotButton />
+
+      <ChatbotButton />
     </div>
   );
 }
