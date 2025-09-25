@@ -1,5 +1,7 @@
 // frontend/src/components/Reservas.jsx
 import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from './config';
+
 import ChatbotButton from "./ChatbotButton";
 
 export default function Reservas() {
@@ -22,13 +24,11 @@ export default function Reservas() {
     "Parque Infantil",
   ];
 
-  const API_URL = "http://localhost:5050/api/reservas";
-
   useEffect(() => { fetchReservas(); }, []);
 
   const fetchReservas = async () => {
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch(`${ API_BASE_URL }`);
       const data = await res.json();
       setReservas(data);
     } catch (error) { console.error("Error al obtener reservas:", error); }
@@ -50,7 +50,7 @@ export default function Reservas() {
     const nuevaReserva = { zona, fecha, horaInicio, horaFin, numeroPersonas: cantidad, comentarios: comentario || "Sin comentarios", estado: "pendiente" };
 
     try {
-      const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(nuevaReserva) });
+      const res = await fetch(`${ API_BASE_URL }`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(nuevaReserva) });
       if (!res.ok) { const err = await res.json(); alert(err.mensaje || "Error al crear reserva"); return; }
       const data = await res.json();
       alert(data.mensaje);
@@ -70,7 +70,7 @@ export default function Reservas() {
   const cancelarReserva = async (id) => {
     if (codigoVerificacion !== codigoGenerado) { alert("El código ingresado no es correcto"); return; }
     try {
-      const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_BASE_URL}/${id}`, { method: "DELETE" });
       if (!res.ok) { const err = await res.json(); alert(err.mensaje || "Error al cancelar reserva"); return; }
       const data = await res.json();
       alert(data.mensaje);

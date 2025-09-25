@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from './config';
 import ChatbotButton from "./ChatbotButton";
 
-const API_URL = "http://localhost:5050/api/reportes";
 
 export default function Reportes({ esAdmin = false }) {
   const [tipoIncidencia, setTipoIncidencia] = useState("");
@@ -34,7 +34,7 @@ export default function Reportes({ esAdmin = false }) {
 
   const fetchReportes = async () => {
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch(`${ API_BASE_URL }`);
       const data = await res.json();
       setReportes(data);
     } catch (error) {
@@ -68,7 +68,7 @@ export default function Reportes({ esAdmin = false }) {
     };
 
     try {
-      const res = await fetch(API_URL, {
+      const res = await fetch(`${ API_BASE_URL }`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(nuevoReporte)
@@ -139,7 +139,7 @@ export default function Reportes({ esAdmin = false }) {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

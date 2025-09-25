@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from './config';
 import ChatbotButton from './ChatbotButton';
 
 export default function Registro() {
@@ -67,7 +68,7 @@ export default function Registro() {
     if (!validarFormulario()) return;
 
     try {
-      const respuesta = await fetch('http://localhost:5050/api/registro', {
+      const respuesta = await fetch(`${API_BASE_URL}/registro`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

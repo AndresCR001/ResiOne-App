@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from './config';
+
 
 export default function Perfil() {
   const navigate = useNavigate();
@@ -37,7 +39,7 @@ export default function Perfil() {
 
   const handleGuardar = async () => {
     try {
-      const respuesta = await fetch('http://localhost:5050/api/editar', {
+      const respuesta = await fetch(`${API_BASE_URL}/editar`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(usuario)
