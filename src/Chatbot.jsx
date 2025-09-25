@@ -1,13 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Chatbot() {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState([
-    { from: "bot", text: "👋 ¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte hoy?" },
-  ]);
+  const messagesEndRef = useRef(null);
+
+  // Cargar historial del localStorage
+  const [messages, setMessages] = useState(() => {
+    const saved = localStorage.getItem("chatMessages");
+    return saved ? JSON.parse(saved) : [
+      { from: "bot", text: "👋 ¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte hoy?" },
+    ];
+  });
+
   const [input, setInput] = useState("");
+  const [botTyping, setBotTyping] = useState(false);
 
   const respuestas = {
     horarios: "⏰ Las zonas comunes están disponibles de 8:00am a 10:00pm.",
@@ -16,22 +24,32 @@ export default function Chatbot() {
     default: "🤖 Lo siento, no entendí tu consulta. Prueba con 'horarios', 'reservas' o 'incidencias'.",
   };
 
-  const enviarMensaje = () => {
+  // Scroll automático al final
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    localStorage.setItem("chatMessages", JSON.stringify(messages));
+  }, [messages]);
+
+  const enviarMensaje = async () => {
     if (!input.trim()) return;
 
     const nuevoMensaje = { from: "user", text: input };
-    setMessages([...messages, nuevoMensaje]);
+    setMessages(prev => [...prev, nuevoMensaje]);
 
-    // Respuesta automática
-    let respuesta = respuestas.default;
-    const texto = input.toLowerCase();
-    if (texto.includes("horario")) respuesta = respuestas.horarios;
-    else if (texto.includes("reserva")) respuesta = respuestas.reservas;
-    else if (texto.includes("incidencia")) respuesta = respuestas.incidencias;
+    setBotTyping(true);
 
+    // Simulación de fetch a backend (puedes reemplazar con API real)
     setTimeout(() => {
-      setMessages((prev) => [...prev, { from: "bot", text: respuesta }]);
-    }, 500);
+      let respuesta = respuestas.default;
+      const texto = input.toLowerCase();
+
+      if (/horario|horarios/.test(texto)) respuesta = respuestas.horarios;
+      else if (/reserva|reservas/.test(texto)) respuesta = respuestas.reservas;
+      else if (/incidencia|incidencias/.test(texto)) respuesta = respuestas.incidencias;
+
+      setMessages(prev => [...prev, { from: "bot", text: respuesta }]);
+      setBotTyping(false);
+    }, 800);
 
     setInput("");
   };
@@ -115,6 +133,22 @@ export default function Chatbot() {
               </span>
             </div>
           ))}
+          {botTyping && (
+            <div style={{ textAlign: "left", marginBottom: "10px" }}>
+              <span style={{
+                display: "inline-block",
+                padding: "10px",
+                borderRadius: "10px",
+                background: "#e9ecef",
+                color: "black",
+                maxWidth: "70%",
+                fontStyle: "italic"
+              }}>
+                🤖 escribiendo...
+              </span>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Input */}
